@@ -387,6 +387,7 @@
     border-radius:999px;
     cursor:pointer;
   }
+  .seg-btn.active{background:var(--surface-2); color:var(--text);}
   .seg-btn.active.in{background:var(--emerald-soft); color:var(--emerald);}
   .seg-btn.active.out{background:rgba(217,122,134,0.15); color:var(--rose);}
 
@@ -596,13 +597,19 @@
     </div>
 
     <div class="panel active" id="panelRingkasan">
+      <div class="seg" id="periodSeg" style="margin-bottom:14px;">
+        <div class="seg-btn active period-opt" data-period="all">Semua</div>
+        <div class="seg-btn period-opt" data-period="day">Harian</div>
+        <div class="seg-btn period-opt" data-period="week">Mingguan</div>
+        <div class="seg-btn period-opt" data-period="month">Bulanan</div>
+      </div>
       <div class="stat-row">
         <div class="stat-card in">
-          <div class="label">Total masuk</div>
+          <div class="label" id="statInLabel">Total masuk</div>
           <div class="value" id="statIn">Rp 0</div>
         </div>
         <div class="stat-card out">
-          <div class="label">Total keluar</div>
+          <div class="label" id="statOutLabel">Total keluar</div>
           <div class="value" id="statOut">Rp 0</div>
         </div>
       </div>
@@ -755,10 +762,42 @@ let selMethodOut = null;
 let selCategory = null;
 let chartInstance = null;
 let categoryDetailKey = null;
+let currentPeriod = 'all';
 
 function todayDateStr(){
   const d = new Date();
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function ymd(d){
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function periodFilteredList(saveId){
+  const all = txForSave(saveId);
+  if(currentPeriod === 'all') return all;
+  const today = new Date(); today.setHours(0,0,0,0);
+  if(currentPeriod === 'day'){
+    const todayStr = todayDateStr();
+    return all.filter(t=>t.date === todayStr);
+  }
+  if(currentPeriod === 'week'){
+    const day = today.getDay();
+    const diffToMonday = (day === 0 ? -6 : 1 - day);
+    const monday = new Date(today); monday.setDate(today.getDate() + diffToMonday);
+    const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
+    const mondayStr = ymd(monday), sundayStr = ymd(sunday);
+    return all.filter(t=> t.date >= mondayStr && t.date <= sundayStr);
+  }
+  if(currentPeriod === 'month'){
+    const mKey = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0');
+    return all.filter(t=>t.date.startsWith(mKey));
+  }
+  return all;
+}
+function periodSuffix(){
+  if(currentPeriod === 'day') return ' (Hari ini)';
+  if(currentPeriod === 'week') return ' (Minggu ini)';
+  if(currentPeriod === 'month') return ' (Bulan ini)';
+  return '';
 }
 function fmtRp(n){
   return 'Rp ' + Math.round(n).toLocaleString('id-ID');
@@ -1027,11 +1066,14 @@ function renderSwitcher(){
 }
 
 function renderRingkasan(){
-  const list = txForSave(currentSaveId);
+  const list = periodFilteredList(currentSaveId);
   const income = list.filter(t=>t.type==='in').reduce((s,t)=>s+t.amount,0);
   const expense = list.filter(t=>t.type==='out').reduce((s,t)=>s+t.amount,0);
+  document.getElementById('statInLabel').textContent = 'Masuk' + periodSuffix();
+  document.getElementById('statOutLabel').textContent = 'Keluar' + periodSuffix();
   document.getElementById('statIn').textContent = fmtRp(income);
   document.getElementById('statOut').textContent = fmtRp(expense);
+  document.querySelector('#chartCard .ctitle').textContent = 'Pengeluaran per kategori' + periodSuffix();
 
   const outByCat = {};
   list.filter(t=>t.type==='out').forEach(t=>{
@@ -1096,11 +1138,11 @@ function renderRingkasan(){
 function showCategoryDetail(catKey){
   categoryDetailKey = catKey;
   const wrap = document.getElementById('categoryDetailWrap');
-  const list = txForSave(currentSaveId)
+  const list = periodFilteredList(currentSaveId)
     .filter(t=>t.type==='out' && t.category===catKey)
     .sort((a,b)=> (b.date+b.createdAt).localeCompare(a.date+a.createdAt));
 
-  document.getElementById('categoryDetailTitle').textContent = 'Riwayat: ' + catLabel(catKey);
+  document.getElementById('categoryDetailTitle').textContent = 'Riwayat: ' + catLabel(catKey) + periodSuffix();
   const listEl = document.getElementById('categoryDetailList');
 
   if(list.length === 0){
@@ -1579,6 +1621,14 @@ document.getElementById('restoreFileInput').addEventListener('change', (e)=>{
 
 iconSlotFill();
 document.getElementById('closeCategoryDetail').addEventListener('click', hideCategoryDetail);
+document.querySelectorAll('.period-opt').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.period-opt').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentPeriod = btn.getAttribute('data-period');
+    renderRingkasan();
+  });
+});
 loadData();
 initDriveClient();
 </script>
