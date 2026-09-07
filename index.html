@@ -319,6 +319,73 @@
   }
   .hist-del:active{background:var(--surface-2);}
 
+  /* ===== Kalender ===== */
+  .cal-nav{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+  .cal-nav .cal-month-label{font-family:'Fraunces', serif; font-weight:600; font-size:16.5px;}
+  .cal-grid-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-md);
+    padding:14px;
+    margin-bottom:16px;
+  }
+  .cal-weekdays{
+    display:grid; grid-template-columns:repeat(7,1fr);
+    text-align:center; font-size:10.5px; color:var(--text-faint);
+    margin-bottom:8px; letter-spacing:0.3px;
+  }
+  .cal-days{display:grid; grid-template-columns:repeat(7,1fr); gap:4px;}
+  .cal-day{
+    aspect-ratio:1;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    border-radius:10px;
+    font-size:12.5px;
+    color:var(--text-muted);
+    cursor:pointer;
+    position:relative;
+    gap:2px;
+  }
+  .cal-day.other-month{opacity:0.25; pointer-events:none;}
+  .cal-day.today{border:1px solid var(--border-soft);}
+  .cal-day.selected{background:var(--text); color:var(--bg); font-weight:700;}
+  .cal-day .dot{width:4px; height:4px; border-radius:50%; background:var(--emerald);}
+  .cal-day.selected .dot{background:var(--bg);}
+  .cal-actions{display:flex; gap:8px; margin-bottom:16px;}
+  .cal-actions .save-btn{margin-top:0;}
+
+  .event-item{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-md);
+    padding:12px 13px;
+    margin-bottom:8px;
+    display:flex; gap:12px; align-items:flex-start;
+  }
+  .event-date-badge{
+    width:44px; flex-shrink:0; text-align:center;
+    background:var(--surface-2); border-radius:10px; padding:7px 0;
+  }
+  .event-date-badge .dd{font-family:'JetBrains Mono', monospace; font-weight:700; font-size:15px; line-height:1;}
+  .event-date-badge .mm{font-size:8.5px; color:var(--text-faint); text-transform:uppercase; margin-top:2px;}
+  .event-mid{flex:1; min-width:0;}
+  .event-title{font-size:13.5px; font-weight:600;}
+  .event-time{font-size:11.5px; color:var(--emerald); margin-top:2px; font-family:'JetBrains Mono', monospace;}
+  .event-note{font-size:11.5px; color:var(--text-faint); margin-top:3px; line-height:1.5;}
+  .event-batch-link{font-size:10.5px; color:var(--text-faint); margin-top:5px; cursor:pointer; text-decoration:underline;}
+  .event-del{
+    width:26px; height:26px; flex-shrink:0; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--text-faint); cursor:pointer;
+  }
+  .event-del:active{background:var(--surface-2);}
+  .day-chip-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:8px;}
+  .day-chip{
+    text-align:center; padding:10px 0; font-size:12px; font-weight:600;
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm);
+    color:var(--text-muted); cursor:pointer;
+  }
+  .day-chip.selected{border-color:var(--text); background:var(--surface-2); color:var(--text);}
+
   .fab{
     position:fixed;
     bottom:26px;
@@ -593,6 +660,8 @@
     <div class="tabs">
       <div class="tab active" data-tab="ringkasan">Ringkasan</div>
       <div class="tab" data-tab="riwayat">Riwayat</div>
+      <div class="tab" data-tab="kalender">Kalender</div>
+      <div class="tab" data-tab="todo">To Do</div>
     </div>
 
     <div class="panel active" id="panelRingkasan">
@@ -634,6 +703,31 @@
 
     <div class="panel" id="panelRiwayat">
       <div id="historyList"></div>
+    </div>
+
+    <div class="panel" id="panelKalender">
+      <div class="cal-nav">
+        <div class="m-btn" id="calPrevMonth">‹</div>
+        <div class="cal-month-label" id="calMonthLabel">September 2026</div>
+        <div class="m-btn" id="calNextMonth">›</div>
+      </div>
+      <div class="cal-grid-card">
+        <div class="cal-weekdays">
+          <div>Min</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
+        </div>
+        <div class="cal-days" id="calDaysGrid"></div>
+      </div>
+
+      <div class="cal-actions">
+        <button class="save-btn" id="addEventBtn">+ Tambah Janji</button>
+        <button class="save-btn secondary" id="addRecurringBtn">+ Jadwal Berulang</button>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <div class="ctitle" id="eventListTitle" style="margin-bottom:0;">Semua Janji</div>
+        <span id="clearDateFilter" style="display:none; cursor:pointer; color:var(--text-faint); font-size:11.5px; font-weight:600;">Lihat semua ✕</span>
+      </div>
+      <div id="eventList"></div>
     </div>
   </div>
 
@@ -708,6 +802,53 @@
     </div>
   </div>
 
+  <div class="overlay" id="eventOverlay">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <h2>Tambah Janji</h2>
+      <div class="field-label" style="margin-top:0;">Judul</div>
+      <input type="text" class="text-input" id="eventTitleInput" placeholder="Misal: Bimbingan skripsi">
+      <div class="field-label">Tanggal</div>
+      <input type="date" class="date-input" id="eventDateInput">
+      <div class="field-label">Jam (opsional)</div>
+      <div class="row2">
+        <input type="time" class="text-input" id="eventStartInput">
+        <input type="time" class="text-input" id="eventEndInput">
+      </div>
+      <div class="field-label">Catatan (opsional)</div>
+      <input type="text" class="text-input" id="eventNoteInput" placeholder="Lokasi, detail, dll.">
+      <div class="err-msg" id="eventErrMsg">Isi judul dan tanggal terlebih dahulu.</div>
+      <button class="save-btn" id="saveEventBtn">Simpan Janji</button>
+      <button class="save-btn secondary" id="closeEventBtn" style="margin-top:10px;">Batal</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="recurringOverlay">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <h2>Jadwal Berulang</h2>
+      <div class="field-label" style="margin-top:0;">Judul (misal: nama mata kuliah)</div>
+      <input type="text" class="text-input" id="recTitleInput" placeholder="Misal: Statistika Dasar">
+      <div class="field-label">Hari</div>
+      <div class="day-chip-grid" id="dayChipGrid"></div>
+      <div class="field-label">Jam mulai &amp; selesai</div>
+      <div class="row2">
+        <input type="time" class="text-input" id="recStartInput">
+        <input type="time" class="text-input" id="recEndInput">
+      </div>
+      <div class="field-label">Rentang tanggal (dari - sampai)</div>
+      <div class="row2">
+        <input type="date" class="date-input" id="recDateStartInput">
+        <input type="date" class="date-input" id="recDateEndInput">
+      </div>
+      <div class="field-label">Catatan (opsional)</div>
+      <input type="text" class="text-input" id="recNoteInput" placeholder="Ruang kelas, dosen, dll.">
+      <div class="err-msg" id="recErrMsg">Lengkapi judul, hari, jam, dan rentang tanggal.</div>
+      <button class="save-btn" id="saveRecurringBtn">Buat Jadwal</button>
+      <button class="save-btn secondary" id="closeRecurringBtn" style="margin-top:10px;">Batal</button>
+    </div>
+  </div>
+
   <div class="toast" id="toast">Tersimpan</div>
 </div>
 
@@ -751,6 +892,10 @@ let transactions = [];
 let categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
 let saveDataList = [];
 let currentSaveId = null;
+let calendarEvents = [];
+let calYear, calMonthIdx;
+let calSelectedDate = null;
+let selRecDays = new Set();
 let currentTab = 'ringkasan';
 let selType = 'in';
 let selMethodIn = null;
@@ -819,10 +964,12 @@ function loadData(){
       transactions = parsed.transactions || [];
       if(parsed.categories && parsed.categories.length) categories = parsed.categories;
       saveDataList = parsed.saveDataList || [];
+      calendarEvents = parsed.calendarEvents || [];
     }
   }catch(e){
     transactions = [];
     saveDataList = [];
+    calendarEvents = [];
   }
 
   // migrasi: kalau ada transaksi lama tanpa saveId, atau belum ada save data sama sekali
@@ -836,6 +983,10 @@ function loadData(){
   }
   currentSaveId = saveDataList[0].id;
 
+  const now = new Date();
+  calYear = now.getFullYear();
+  calMonthIdx = now.getMonth();
+
   document.getElementById('loadingScreen').style.display = 'none';
   document.getElementById('mainContent').style.display = 'block';
   saveData();
@@ -844,7 +995,7 @@ function loadData(){
 
 function saveData(){
   try{
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({transactions, categories, saveDataList}));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({transactions, categories, saveDataList, calendarEvents}));
   }catch(e){
     showToast('Gagal menyimpan data di browser ini');
   }
@@ -894,8 +1045,9 @@ async function pullFromDrive(silent){
   if(Array.isArray(parsed.transactions)) transactions = parsed.transactions;
   if(Array.isArray(parsed.categories) && parsed.categories.length) categories = parsed.categories;
   if(Array.isArray(parsed.saveDataList) && parsed.saveDataList.length) saveDataList = parsed.saveDataList;
+  if(Array.isArray(parsed.calendarEvents)) calendarEvents = parsed.calendarEvents;
   if(!saveDataList.find(s=>s.id===currentSaveId)) currentSaveId = saveDataList[0].id;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({transactions, categories, saveDataList}));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({transactions, categories, saveDataList, calendarEvents}));
   renderAll();
   if(!silent) showToast('Data terbaru dari Drive dimuat');
 }
@@ -907,7 +1059,7 @@ async function pushToDrive(){
     const res = await fetch(url, {
       method: 'POST',
       headers: {'Content-Type': 'text/plain'},
-      body: JSON.stringify({transactions, categories, saveDataList})
+      body: JSON.stringify({transactions, categories, saveDataList, calendarEvents})
     });
     if(!res.ok) throw new Error('Gagal menyimpan ke Drive');
     driveConnected = true;
@@ -1153,6 +1305,8 @@ function renderAll(){
   renderSwitcher();
   renderRingkasan();
   renderRiwayat();
+  renderCalendar();
+  renderEventList();
 }
 
 // ===== Save data navigation & management =====
@@ -1207,6 +1361,7 @@ document.querySelectorAll('.tab').forEach(tab=>{
     currentTab = tab.getAttribute('data-tab');
     document.getElementById('panelRingkasan').classList.toggle('active', currentTab==='ringkasan');
     document.getElementById('panelRiwayat').classList.toggle('active', currentTab==='riwayat');
+    document.getElementById('panelKalender').classList.toggle('active', currentTab==='kalender');
   });
 });
 
@@ -1539,6 +1694,267 @@ document.getElementById('restoreFileInput').addEventListener('change', (e)=>{
   };
   reader.readAsText(file);
   e.target.value = '';
+});
+
+// ===== Kalender & Janji =====
+const MONTH_NAMES_ID = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const MONTH_SHORT_ID = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+const DAY_NAMES_ID = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+
+function renderCalendar(){
+  document.getElementById('calMonthLabel').textContent = MONTH_NAMES_ID[calMonthIdx] + ' ' + calYear;
+  const grid = document.getElementById('calDaysGrid');
+  grid.innerHTML = '';
+
+  const firstOfMonth = new Date(calYear, calMonthIdx, 1);
+  const startOffset = firstOfMonth.getDay(); // 0 = Minggu
+  const daysInMonth = new Date(calYear, calMonthIdx + 1, 0).getDate();
+  const daysInPrevMonth = new Date(calYear, calMonthIdx, 0).getDate();
+  const todayStr = todayDateStr();
+
+  const eventDates = new Set(calendarEvents.map(ev=>ev.date));
+
+  const totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
+  for(let i=0; i<totalCells; i++){
+    const cell = document.createElement('div');
+    let cellDate, dayNum, otherMonth = false;
+    if(i < startOffset){
+      dayNum = daysInPrevMonth - (startOffset - 1 - i);
+      const m = calMonthIdx === 0 ? 11 : calMonthIdx - 1;
+      const y = calMonthIdx === 0 ? calYear - 1 : calYear;
+      cellDate = ymd(new Date(y, m, dayNum));
+      otherMonth = true;
+    } else if(i >= startOffset + daysInMonth){
+      dayNum = i - startOffset - daysInMonth + 1;
+      const m = calMonthIdx === 11 ? 0 : calMonthIdx + 1;
+      const y = calMonthIdx === 11 ? calYear + 1 : calYear;
+      cellDate = ymd(new Date(y, m, dayNum));
+      otherMonth = true;
+    } else {
+      dayNum = i - startOffset + 1;
+      cellDate = ymd(new Date(calYear, calMonthIdx, dayNum));
+    }
+
+    cell.className = 'cal-day' + (otherMonth ? ' other-month' : '');
+    if(cellDate === todayStr) cell.classList.add('today');
+    if(cellDate === calSelectedDate) cell.classList.add('selected');
+    cell.innerHTML = '<span>' + dayNum + '</span>' + (eventDates.has(cellDate) ? '<span class="dot"></span>' : '');
+    cell.addEventListener('click', ()=>{
+      calSelectedDate = (calSelectedDate === cellDate) ? null : cellDate;
+      renderCalendar();
+      renderEventList();
+    });
+    grid.appendChild(cell);
+  }
+}
+
+function changeCalMonth(delta){
+  calMonthIdx += delta;
+  if(calMonthIdx < 0){ calMonthIdx = 11; calYear--; }
+  if(calMonthIdx > 11){ calMonthIdx = 0; calYear++; }
+  renderCalendar();
+}
+document.getElementById('calPrevMonth').addEventListener('click', ()=>changeCalMonth(-1));
+document.getElementById('calNextMonth').addEventListener('click', ()=>changeCalMonth(1));
+
+function renderEventList(){
+  const listEl = document.getElementById('eventList');
+  const titleEl = document.getElementById('eventListTitle');
+  const clearBtn = document.getElementById('clearDateFilter');
+
+  let list = calendarEvents.slice();
+  if(calSelectedDate){
+    list = list.filter(ev=>ev.date === calSelectedDate);
+    const d = new Date(calSelectedDate + 'T00:00:00');
+    titleEl.textContent = 'Janji: ' + d.toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long'});
+    clearBtn.style.display = 'inline';
+  } else {
+    titleEl.textContent = 'Semua Janji';
+    clearBtn.style.display = 'none';
+  }
+
+  list.sort((a,b)=> (a.date + (a.startTime||'00:00')).localeCompare(b.date + (b.startTime||'00:00')));
+
+  if(list.length === 0){
+    listEl.innerHTML = '<div class="empty-state"><div class="e-title">Belum ada janji</div><div class="e-sub">Ketuk "+ Tambah Janji" untuk mencatat jadwalmu.</div></div>';
+    return;
+  }
+
+  listEl.innerHTML = list.map(ev=>{
+    const d = new Date(ev.date + 'T00:00:00');
+    const timeText = ev.startTime ? (ev.startTime + (ev.endTime ? ' - ' + ev.endTime : '')) : '';
+    const batchLink = ev.batchId ? `<div class="event-batch-link" data-batch="${ev.batchId}">Hapus semua kejadian jadwal ini</div>` : '';
+    return `
+      <div class="event-item">
+        <div class="event-date-badge">
+          <div class="dd">${d.getDate()}</div>
+          <div class="mm">${MONTH_SHORT_ID[d.getMonth()]}</div>
+        </div>
+        <div class="event-mid">
+          <div class="event-title">${ev.title}</div>
+          ${timeText ? `<div class="event-time">${timeText}</div>` : ''}
+          ${ev.note ? `<div class="event-note">${ev.note}</div>` : ''}
+          ${batchLink}
+        </div>
+        <div class="event-del" data-id="${ev.id}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></div>
+      </div>
+    `;
+  }).join('');
+
+  listEl.querySelectorAll('.event-del').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      calendarEvents = calendarEvents.filter(ev=>ev.id !== btn.getAttribute('data-id'));
+      saveData();
+      renderCalendar();
+      renderEventList();
+      showToast('Janji dihapus');
+    });
+  });
+  listEl.querySelectorAll('.event-batch-link').forEach(link=>{
+    link.addEventListener('click', ()=>{
+      const batchId = link.getAttribute('data-batch');
+      const ok = confirm('Hapus semua kejadian dari jadwal berulang ini?');
+      if(!ok) return;
+      calendarEvents = calendarEvents.filter(ev=>ev.batchId !== batchId);
+      saveData();
+      renderCalendar();
+      renderEventList();
+      showToast('Jadwal berulang dihapus');
+    });
+  });
+}
+
+document.getElementById('clearDateFilter').addEventListener('click', ()=>{
+  calSelectedDate = null;
+  renderCalendar();
+  renderEventList();
+});
+
+// ---- Tambah janji tunggal ----
+function openEventModal(){
+  document.getElementById('eventTitleInput').value = '';
+  document.getElementById('eventDateInput').value = calSelectedDate || todayDateStr();
+  document.getElementById('eventStartInput').value = '';
+  document.getElementById('eventEndInput').value = '';
+  document.getElementById('eventNoteInput').value = '';
+  document.getElementById('eventErrMsg').style.display = 'none';
+  document.getElementById('eventOverlay').classList.add('open');
+}
+document.getElementById('addEventBtn').addEventListener('click', openEventModal);
+document.getElementById('closeEventBtn').addEventListener('click', ()=>{
+  document.getElementById('eventOverlay').classList.remove('open');
+});
+document.getElementById('eventOverlay').addEventListener('click', (e)=>{ if(e.target.id === 'eventOverlay') document.getElementById('eventOverlay').classList.remove('open'); });
+
+document.getElementById('saveEventBtn').addEventListener('click', ()=>{
+  const title = document.getElementById('eventTitleInput').value.trim();
+  const date = document.getElementById('eventDateInput').value;
+  const startTime = document.getElementById('eventStartInput').value;
+  const endTime = document.getElementById('eventEndInput').value;
+  const note = document.getElementById('eventNoteInput').value.trim();
+  const errEl = document.getElementById('eventErrMsg');
+
+  if(!title || !date){
+    errEl.textContent = 'Isi judul dan tanggal terlebih dahulu.';
+    errEl.style.display = 'block';
+    return;
+  }
+  calendarEvents.push({
+    id: uid('ev'),
+    title, date, startTime: startTime || '', endTime: endTime || '', note,
+    createdAt: Date.now()
+  });
+  saveData();
+  calYear = parseInt(date.slice(0,4),10);
+  calMonthIdx = parseInt(date.slice(5,7),10) - 1;
+  calSelectedDate = date;
+  renderCalendar();
+  renderEventList();
+  document.getElementById('eventOverlay').classList.remove('open');
+  showToast('Janji tersimpan');
+});
+
+// ---- Jadwal berulang (multi tanggal) ----
+const REC_DAY_OPTIONS = [
+  {label:'Senin', value:1}, {label:'Selasa', value:2}, {label:'Rabu', value:3}, {label:'Kamis', value:4},
+  {label:'Jumat', value:5}, {label:'Sabtu', value:6}, {label:'Minggu', value:0}
+];
+function buildDayChipGrid(){
+  const grid = document.getElementById('dayChipGrid');
+  grid.innerHTML = '';
+  REC_DAY_OPTIONS.forEach(opt=>{
+    const chip = document.createElement('div');
+    chip.className = 'day-chip' + (selRecDays.has(opt.value) ? ' selected' : '');
+    chip.textContent = opt.label;
+    chip.addEventListener('click', ()=>{
+      if(selRecDays.has(opt.value)) selRecDays.delete(opt.value);
+      else selRecDays.add(opt.value);
+      chip.classList.toggle('selected');
+    });
+    grid.appendChild(chip);
+  });
+}
+
+function openRecurringModal(){
+  selRecDays = new Set();
+  buildDayChipGrid();
+  document.getElementById('recTitleInput').value = '';
+  document.getElementById('recStartInput').value = '';
+  document.getElementById('recEndInput').value = '';
+  document.getElementById('recDateStartInput').value = todayDateStr();
+  document.getElementById('recDateEndInput').value = '';
+  document.getElementById('recNoteInput').value = '';
+  document.getElementById('recErrMsg').style.display = 'none';
+  document.getElementById('recurringOverlay').classList.add('open');
+}
+document.getElementById('addRecurringBtn').addEventListener('click', openRecurringModal);
+document.getElementById('closeRecurringBtn').addEventListener('click', ()=>{
+  document.getElementById('recurringOverlay').classList.remove('open');
+});
+document.getElementById('recurringOverlay').addEventListener('click', (e)=>{ if(e.target.id === 'recurringOverlay') document.getElementById('recurringOverlay').classList.remove('open'); });
+
+document.getElementById('saveRecurringBtn').addEventListener('click', ()=>{
+  const title = document.getElementById('recTitleInput').value.trim();
+  const startTime = document.getElementById('recStartInput').value;
+  const endTime = document.getElementById('recEndInput').value;
+  const dateStart = document.getElementById('recDateStartInput').value;
+  const dateEnd = document.getElementById('recDateEndInput').value;
+  const note = document.getElementById('recNoteInput').value.trim();
+  const errEl = document.getElementById('recErrMsg');
+
+  if(!title || selRecDays.size === 0 || !startTime || !endTime || !dateStart || !dateEnd){
+    errEl.textContent = 'Lengkapi judul, minimal satu hari, jam, dan rentang tanggal.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if(dateEnd < dateStart){
+    errEl.textContent = 'Tanggal selesai tidak boleh sebelum tanggal mulai.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const batchId = uid('batch');
+  const start = new Date(dateStart + 'T00:00:00');
+  const end = new Date(dateEnd + 'T00:00:00');
+  let created = 0;
+  for(let d = new Date(start); d <= end; d.setDate(d.getDate()+1)){
+    if(selRecDays.has(d.getDay())){
+      calendarEvents.push({
+        id: uid('ev'),
+        title, date: ymd(d), startTime, endTime, note,
+        batchId, createdAt: Date.now()
+      });
+      created++;
+    }
+  }
+  saveData();
+  calYear = start.getFullYear();
+  calMonthIdx = start.getMonth();
+  calSelectedDate = null;
+  renderCalendar();
+  renderEventList();
+  document.getElementById('recurringOverlay').classList.remove('open');
+  showToast(created + ' jadwal berhasil dibuat');
 });
 
 iconSlotFill();
