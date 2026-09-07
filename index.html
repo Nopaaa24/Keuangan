@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Catatan Kas</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
@@ -690,11 +689,13 @@
     <div class="sheet">
       <div class="sheet-handle"></div>
       <h2>Cadangkan &amp; Pulihkan Data</h2>
-      <div class="field-label" style="margin-top:0;">Google Drive</div>
-      <div class="backup-info" id="driveStatus" style="margin-bottom:12px;">Belum terhubung ke Google Drive. Data hanya tersimpan di browser ini.</div>
-      <button class="save-btn" id="connectDriveBtn">Hubungkan Google Drive</button>
+      <div class="field-label" style="margin-top:0;">Google Drive (otomatis, tanpa login)</div>
+      <div class="backup-info" id="driveStatus" style="margin-bottom:12px;">Belum diatur. Masukkan URL Web App dan kode rahasia dari Apps Script kamu.</div>
+      <input type="text" class="text-input" id="appsScriptUrlInput" placeholder="URL Web App Apps Script" style="margin-bottom:8px;">
+      <input type="text" class="text-input" id="appsScriptSecretInput" placeholder="Kode rahasia (SECRET)">
+      <button class="save-btn" id="saveAppsScriptBtn" style="margin-top:10px;">Simpan &amp; Sambungkan</button>
       <button class="save-btn secondary" id="pullDriveBtn" style="margin-top:10px; display:none;">Ambil Data Terbaru dari Drive</button>
-      <button class="save-btn secondary" id="disconnectDriveBtn" style="margin-top:10px; display:none;">Putuskan Koneksi</button>
+      <button class="save-btn secondary" id="disconnectDriveBtn" style="margin-top:10px; display:none;">Putuskan &amp; Hapus Pengaturan</button>
 
       <div class="field-label">Cadangan Lokal (opsional)</div>
       <div class="backup-info">
@@ -727,18 +728,13 @@ const ICONS = {
 const CHART_COLORS = ['#4fba8f','#e0a458','#8b93a3','#d97a86','#7fa8d9','#c9a8e0','#e0c458','#7fbfd9'];
 const STORAGE_KEY = 'catatan_kas_fin_data';
 
-// ===== Google Drive config =====
-const DRIVE_CLIENT_ID = '710073193972-o8mmkd74t7d9pnhkqjlaavqg4ib4g3me.apps.googleusercontent.com';
-const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
-const DRIVE_FILE_NAME = 'catatan-kas-data.json';
-let driveTokenClient = null;
-let driveAccessToken = null;
-let driveFileId = null;
+// ===== Google Drive via Apps Script (tanpa login OAuth) =====
+const APPS_SCRIPT_URL_KEY = 'catatan_kas_apps_script_url';
+const APPS_SCRIPT_SECRET_KEY = 'catatan_kas_apps_script_secret';
+let appsScriptUrl = localStorage.getItem(APPS_SCRIPT_URL_KEY) || '';
+let appsScriptSecret = localStorage.getItem(APPS_SCRIPT_SECRET_KEY) || '';
 let driveConnected = false;
 let drivePushTimer = null;
-let driveRefreshTimer = null;
-let driveManualAttempt = false;
-const DRIVE_TOKEN_KEY = 'catatan_kas_drive_token';
 
 const DEFAULT_CATEGORIES = [
   {key:'netflix', label:'Netflix', custom:false},
@@ -858,125 +854,43 @@ function saveData(){
   }
 }
 
-// ===== Google Drive integration =====
-function initDriveClient(){
-  if(typeof google === 'undefined' || !google.accounts){
-    setTimeout(initDriveClient, 400);
-    return;
+// ===== Google Drive via Apps Script (tanpa login OAuth) =====
+function initAppsScriptSync(){
+  const urlInput = document.getElementById('appsScriptUrlInput');
+  const secretInput = document.getElementById('appsScriptSecretInput');
+  if(urlInput) urlInput.value = appsScriptUrl;
+  if(secretInput) secretInput.value = appsScriptSecret;
+
+  if(appsScriptUrl && appsScriptSecret){
+    updateDriveUI('Menyambungkan…');
+    pullFromDrive(true).then(()=>{
+      driveConnected = true;
+      updateDriveUI('Terhubung ke Google Drive. Data otomatis tersinkron, tanpa login.');
+    }).catch(()=>{
+      driveConnected = false;
+      updateDriveUI('Gagal terhubung. Periksa kembali URL dan kode rahasia.');
+    });
+  } else {
+    updateDriveUI('Belum diatur. Masukkan URL Web App dan kode rahasia dari Apps Script kamu.');
   }
-  driveTokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: DRIVE_CLIENT_ID,
-    scope: DRIVE_SCOPE,
-    callback: async (resp)=>{
-      if(resp.error){
-        driveConnected = false;
-        if(driveManualAttempt){
-          updateDriveUI('Belum terhubung ke Google Drive. Data hanya tersimpan di browser ini.');
-          showToast('Gagal menghubungkan Google Drive');
-        }
-        driveManualAttempt = false;
-        return;
-      }
-      driveAccessToken = resp.access_token;
-      driveConnected = true;
-      const expiry = Date.now() + ((resp.expires_in || 3500) * 1000);
-      localStorage.setItem(DRIVE_TOKEN_KEY, JSON.stringify({token: resp.access_token, expiry}));
-      scheduleDriveTokenRefresh(expiry);
-      updateDriveUI('Menyambungkan…');
-      try{
-        await ensureDriveFile();
-        await pullFromDrive(true);
-        updateDriveUI('Terhubung ke Google Drive. Data otomatis tersinkron.');
-        if(driveManualAttempt) showToast('Terhubung ke Google Drive');
-      }catch(e){
-        driveConnected = false;
-        updateDriveUI('Belum terhubung ke Google Drive. Data hanya tersimpan di browser ini.');
-        if(driveManualAttempt) showToast('Gagal menyinkronkan dengan Drive');
-      }
-      driveManualAttempt = false;
-    }
-  });
-  tryRestoreDriveSession();
-}
-
-function scheduleDriveTokenRefresh(expiry){
-  // Tidak lagi mencoba refresh otomatis di background — di HP, permintaan
-  // login Google yang tidak dipicu langsung oleh sentuhan pengguna sering
-  // diblokir diam-diam oleh browser. Sesi cukup dipakai sampai kedaluwarsa,
-  // lalu pengguna tinggal tekan tombol Hubungkan lagi.
-}
-
-function tryRestoreDriveSession(){
-  try{
-    const raw = localStorage.getItem(DRIVE_TOKEN_KEY);
-    if(!raw) return;
-    const cached = JSON.parse(raw);
-    if(cached.token && cached.expiry > Date.now() + 60000){
-      driveAccessToken = cached.token;
-      driveConnected = true;
-      updateDriveUI('Menyambungkan…');
-      ensureDriveFile().then(()=>pullFromDrive(true)).then(()=>{
-        updateDriveUI('Terhubung ke Google Drive. Data otomatis tersinkron.');
-      }).catch(()=>{
-        driveConnected = false;
-        updateDriveUI('Belum terhubung ke Google Drive. Data hanya tersimpan di browser ini.');
-      });
-    } else {
-      localStorage.removeItem(DRIVE_TOKEN_KEY);
-      updateDriveUI('Belum terhubung ke Google Drive. Data hanya tersimpan di browser ini.');
-    }
-  }catch(e){}
 }
 
 function updateDriveUI(statusText){
   const statusEl = document.getElementById('driveStatus');
   if(statusText) statusEl.textContent = statusText;
-  document.getElementById('connectDriveBtn').style.display = driveConnected ? 'none' : 'block';
   document.getElementById('pullDriveBtn').style.display = driveConnected ? 'block' : 'none';
   document.getElementById('disconnectDriveBtn').style.display = driveConnected ? 'block' : 'none';
 }
 
-async function driveFetch(url, options){
-  options = options || {};
-  options.headers = Object.assign({}, options.headers, {'Authorization': 'Bearer ' + driveAccessToken});
-  const res = await fetch(url, options);
-  if(res.status === 401){
-    driveConnected = false;
-    localStorage.removeItem(DRIVE_TOKEN_KEY);
-    updateDriveUI('Sesi Google Drive berakhir, silakan hubungkan kembali.');
-    throw new Error('Drive API error: token kedaluwarsa');
-  }
-  if(!res.ok){
-    const errText = await res.text().catch(()=> '');
-    throw new Error('Drive API error: ' + res.status + ' ' + errText);
-  }
-  return res;
-}
-
-async function ensureDriveFile(){
-  const q = encodeURIComponent(`name='${DRIVE_FILE_NAME}' and trashed=false`);
-  const searchRes = await driveFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&spaces=drive&fields=files(id,name)`);
-  const searchData = await searchRes.json();
-  if(searchData.files && searchData.files.length > 0){
-    driveFileId = searchData.files[0].id;
-    return;
-  }
-  const createRes = await driveFetch('https://www.googleapis.com/drive/v3/files', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({name: DRIVE_FILE_NAME, mimeType: 'application/json'})
-  });
-  const createData = await createRes.json();
-  driveFileId = createData.id;
-  await pushToDrive();
-}
-
 async function pullFromDrive(silent){
-  if(!driveFileId) return;
-  const res = await driveFetch(`https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`);
+  if(!appsScriptUrl || !appsScriptSecret) return;
+  const url = appsScriptUrl + '?secret=' + encodeURIComponent(appsScriptSecret) + '&action=load';
+  const res = await fetch(url);
+  if(!res.ok) throw new Error('Gagal mengambil data dari Apps Script');
   const text = await res.text();
   if(!text || !text.trim()) return;
   const parsed = JSON.parse(text);
+  if(parsed.error) throw new Error(parsed.error);
   if(Array.isArray(parsed.transactions)) transactions = parsed.transactions;
   if(Array.isArray(parsed.categories) && parsed.categories.length) categories = parsed.categories;
   if(Array.isArray(parsed.saveDataList) && parsed.saveDataList.length) saveDataList = parsed.saveDataList;
@@ -987,36 +901,44 @@ async function pullFromDrive(silent){
 }
 
 async function pushToDrive(){
-  if(!driveFileId || !driveAccessToken) return;
+  if(!appsScriptUrl || !appsScriptSecret) return;
   try{
-    await driveFetch(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media`, {
-      method: 'PATCH',
-      headers: {'Content-Type': 'application/json'},
+    const url = appsScriptUrl + '?secret=' + encodeURIComponent(appsScriptSecret) + '&action=save';
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain'},
       body: JSON.stringify({transactions, categories, saveDataList})
     });
+    if(!res.ok) throw new Error('Gagal menyimpan ke Drive');
+    driveConnected = true;
   }catch(e){
     showToast('Gagal menyinkronkan ke Drive');
   }
 }
 
-document.getElementById('connectDriveBtn').addEventListener('click', ()=>{
-  if(!driveTokenClient){ showToast('Google Drive belum siap, coba lagi sesaat lagi'); return; }
-  driveManualAttempt = true;
-  driveTokenClient.requestAccessToken({prompt: 'consent'});
+document.getElementById('saveAppsScriptBtn').addEventListener('click', ()=>{
+  const url = document.getElementById('appsScriptUrlInput').value.trim();
+  const secret = document.getElementById('appsScriptSecretInput').value.trim();
+  if(!url || !secret){ showToast('Isi URL dan kode rahasia terlebih dahulu'); return; }
+  appsScriptUrl = url;
+  appsScriptSecret = secret;
+  localStorage.setItem(APPS_SCRIPT_URL_KEY, url);
+  localStorage.setItem(APPS_SCRIPT_SECRET_KEY, secret);
+  initAppsScriptSync();
 });
 document.getElementById('pullDriveBtn').addEventListener('click', ()=>{ pullFromDrive(false); });
 document.getElementById('disconnectDriveBtn').addEventListener('click', ()=>{
-  if(driveAccessToken && google.accounts && google.accounts.oauth2){
-    google.accounts.oauth2.revoke(driveAccessToken, ()=>{});
-  }
-  clearTimeout(driveRefreshTimer);
-  localStorage.removeItem(DRIVE_TOKEN_KEY);
-  driveAccessToken = null;
-  driveFileId = null;
+  localStorage.removeItem(APPS_SCRIPT_URL_KEY);
+  localStorage.removeItem(APPS_SCRIPT_SECRET_KEY);
+  appsScriptUrl = '';
+  appsScriptSecret = '';
   driveConnected = false;
-  updateDriveUI('Belum terhubung ke Google Drive. Data hanya tersimpan di browser ini.');
-  showToast('Koneksi Google Drive diputus');
+  document.getElementById('appsScriptUrlInput').value = '';
+  document.getElementById('appsScriptSecretInput').value = '';
+  updateDriveUI('Belum diatur. Masukkan URL Web App dan kode rahasia dari Apps Script kamu.');
+  showToast('Pengaturan Google Drive dihapus');
 });
+
 
 function iconSlotFill(){
   document.getElementById('icoDigitalSlot').innerHTML = ICONS.digital;
@@ -1630,7 +1552,7 @@ document.querySelectorAll('.period-opt').forEach(btn=>{
   });
 });
 loadData();
-initDriveClient();
+initAppsScriptSync();
 </script>
 </body>
 </html>
