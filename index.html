@@ -385,6 +385,41 @@
     color:var(--text-muted); cursor:pointer;
   }
   .day-chip.selected{border-color:var(--text); background:var(--surface-2); color:var(--text);}
+  .color-swatch-grid{display:flex; gap:11px; flex-wrap:wrap;}
+  .color-swatch{width:28px; height:28px; border-radius:50%; cursor:pointer; outline:2px solid transparent; outline-offset:2px;}
+  .color-swatch.selected{outline-color:var(--text);}
+  .cal-indicators{display:flex; gap:2px; justify-content:center; margin-top:1px;}
+  .cal-ind{width:4.5px; height:4.5px; flex-shrink:0;}
+  .cal-ind.single{border-radius:50%;}
+  .cal-ind.rec{border-radius:1.5px;}
+  .cal-ind-more{font-size:7px; color:var(--text-faint); line-height:4.5px;}
+  .cal-day.selected .cal-ind-more{color:var(--bg);}
+  .event-title-row{display:flex; align-items:center; gap:6px;}
+  .event-type-icon{display:flex; flex-shrink:0;}
+  .event-type-icon svg{width:12px; height:12px; display:block;}
+
+  .todo-add-row{display:flex; gap:8px; margin-bottom:16px;}
+  .todo-add-row input{flex:1;}
+  .todo-add-btn{
+    flex-shrink:0; width:46px; height:46px; border-radius:12px; border:none;
+    background:var(--text); color:var(--bg); font-size:22px; line-height:1; cursor:pointer;
+  }
+  .todo-add-btn:active{transform:scale(0.94);}
+  .todo-item{
+    display:flex; align-items:center; gap:12px;
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md);
+    padding:12px 13px; margin-bottom:8px;
+  }
+  .todo-check{
+    width:22px; height:22px; border-radius:50%; border:1.5px solid var(--border-soft);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; color:var(--bg);
+  }
+  .todo-check.checked{background:var(--emerald); border-color:var(--emerald);}
+  .todo-text{flex:1; font-size:13.5px; min-width:0; word-break:break-word;}
+  .todo-text.done{color:var(--text-faint); text-decoration:line-through;}
+  .todo-del{width:26px; height:26px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--text-faint); cursor:pointer;}
+  .todo-del:active{background:var(--surface-2);}
+  .todo-section-label{font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.4px; margin:14px 2px 8px;}
 
   .fab{
     position:fixed;
@@ -566,6 +601,75 @@
     min-height:60vh; color:var(--text-faint); font-size:13px;
   }
 
+  /* ===== Menu navigasi ===== */
+  .menu-item{
+    display:flex; align-items:center; gap:12px;
+    padding:14px 12px;
+    border-radius:var(--radius-md);
+    cursor:pointer;
+    font-size:14px; font-weight:600;
+    color:var(--text-muted);
+    margin-bottom:6px;
+  }
+  .menu-item svg{width:18px; height:18px; flex-shrink:0;}
+  .menu-item.menu-active{background:var(--surface-2); color:var(--text);}
+
+  /* ===== Color swatch ===== */
+  .color-swatch-grid{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:4px;}
+  .color-swatch{
+    width:30px; height:30px; border-radius:50%;
+    cursor:pointer; border:2px solid transparent;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .color-swatch svg{width:14px; height:14px; color:#12151c; opacity:0;}
+  .color-swatch.selected{border-color:var(--text);}
+  .color-swatch.selected svg{opacity:1;}
+
+  /* ===== To Do List ===== */
+  .todo-add-row{display:flex; gap:8px; margin-bottom:16px;}
+  .todo-add-row .text-input{flex:1;}
+  .todo-add-btn{
+    width:48px; flex-shrink:0;
+    border-radius:var(--radius-md);
+    border:none; background:var(--text); color:var(--bg);
+    font-size:20px; cursor:pointer;
+  }
+  .todo-add-btn:active{transform:scale(0.94);}
+  .todo-item{
+    display:flex; align-items:center; gap:12px;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--radius-md); padding:12px 13px; margin-bottom:8px;
+  }
+  .todo-check{
+    width:22px; height:22px; border-radius:50%;
+    border:1.5px solid var(--border); flex-shrink:0; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .todo-check svg{width:12px; height:12px; color:var(--bg); opacity:0;}
+  .todo-check.done{background:var(--emerald); border-color:var(--emerald);}
+  .todo-check.done svg{opacity:1;}
+  .todo-text{flex:1; font-size:13.5px; min-width:0; word-break:break-word;}
+  .todo-text.done{text-decoration:line-through; color:var(--text-faint);}
+  .todo-del{
+    width:26px; height:26px; flex-shrink:0; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--text-faint); cursor:pointer;
+  }
+  .todo-del:active{background:var(--surface-2);}
+
+  .cal-dots{display:flex; gap:2px; justify-content:center; margin-top:2px; height:5px;}
+  .cal-dots .dot{width:4px; height:4px; border-radius:50%;}
+  .cal-dots .dot.dot-batch{border-radius:1.5px;}
+
+  .event-icon{
+    width:38px; height:38px; border-radius:11px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .event-icon svg{width:17px; height:17px;}
+
+  .hist-icon.convert{background:var(--surface-2); color:var(--text-muted);}
+
   .report-section{margin-bottom:18px;}
   .report-section .r-title{
     font-family:'Fraunces', serif;
@@ -614,15 +718,40 @@
 
   <div id="mainContent" style="display:none;">
     <header class="top">
-      <div>
-        <div class="brand-mark">Catatan Kas</div>
-        <div class="brand-tag">Buku Kas Pribadi</div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="icon-btn" id="menuIconBtn" title="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </div>
+        <div>
+          <div class="brand-mark">Catatan Kas</div>
+          <div class="brand-tag">Buku Kas Pribadi</div>
+        </div>
       </div>
       <div class="icon-btn" id="backupIconBtn" title="Cadangkan &amp; pulihkan">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 19h16"/></svg>
       </div>
     </header>
 
+    <div id="viewMenuOverlay" class="overlay">
+      <div class="sheet">
+        <div class="sheet-handle"></div>
+        <h2>Menu</h2>
+        <div class="menu-item menu-active" data-view="keuangan">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2.5"/><path d="M16 13h.01"/><path d="M2 10h20"/></svg>
+          Ringkasan Keuangan
+        </div>
+        <div class="menu-item" data-view="kalender">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+          Kalender
+        </div>
+        <div class="menu-item" data-view="todo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg>
+          To Do List
+        </div>
+      </div>
+    </div>
+
+    <div id="financeMainContent">
     <div class="passbook">
       <div class="saldo-label">Saldo save data ini</div>
       <div class="saldo-amount" id="saldoTotal">Rp 0</div>
@@ -642,6 +771,9 @@
           </div>
         </div>
       </div>
+      <div style="text-align:center; margin-top:12px;">
+        <span id="openConvertBtn" style="font-size:11.5px; color:var(--text-faint); cursor:pointer; text-decoration:underline;">⇄ Konversi Saldo (Digital ↔ Fisik)</span>
+      </div>
     </div>
 
     <div class="save-switch">
@@ -660,7 +792,6 @@
     <div class="tabs">
       <div class="tab active" data-tab="ringkasan">Ringkasan</div>
       <div class="tab" data-tab="riwayat">Riwayat</div>
-      <div class="tab" data-tab="kalender">Kalender</div>
       <div class="tab" data-tab="todo">To Do</div>
     </div>
 
@@ -704,6 +835,7 @@
     <div class="panel" id="panelRiwayat">
       <div id="historyList"></div>
     </div>
+    </div>
 
     <div class="panel" id="panelKalender">
       <div class="cal-nav">
@@ -728,6 +860,14 @@
         <span id="clearDateFilter" style="display:none; cursor:pointer; color:var(--text-faint); font-size:11.5px; font-weight:600;">Lihat semua ✕</span>
       </div>
       <div id="eventList"></div>
+    </div>
+
+    <div class="panel" id="viewTodo">
+      <div class="todo-add-row">
+        <input type="text" class="text-input" id="todoInput" placeholder="Tambah tugas baru...">
+        <button class="todo-add-btn" id="addTodoBtn">+</button>
+      </div>
+      <div id="todoList"></div>
     </div>
   </div>
 
@@ -817,6 +957,8 @@
       </div>
       <div class="field-label">Catatan (opsional)</div>
       <input type="text" class="text-input" id="eventNoteInput" placeholder="Lokasi, detail, dll.">
+      <div class="field-label">Warna</div>
+      <div class="color-swatch-grid" id="eventColorGrid"></div>
       <div class="err-msg" id="eventErrMsg">Isi judul dan tanggal terlebih dahulu.</div>
       <button class="save-btn" id="saveEventBtn">Simpan Janji</button>
       <button class="save-btn secondary" id="closeEventBtn" style="margin-top:10px;">Batal</button>
@@ -843,9 +985,29 @@
       </div>
       <div class="field-label">Catatan (opsional)</div>
       <input type="text" class="text-input" id="recNoteInput" placeholder="Ruang kelas, dosen, dll.">
+      <div class="field-label">Warna</div>
+      <div class="color-swatch-grid" id="recColorGrid"></div>
       <div class="err-msg" id="recErrMsg">Lengkapi judul, hari, jam, dan rentang tanggal.</div>
       <button class="save-btn" id="saveRecurringBtn">Buat Jadwal</button>
       <button class="save-btn secondary" id="closeRecurringBtn" style="margin-top:10px;">Batal</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="convertOverlay">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <h2>Konversi Saldo</h2>
+      <div class="seg" style="margin-top:0;">
+        <div class="seg-btn active in" data-dir="d2f">Digital → Fisik</div>
+        <div class="seg-btn out" data-dir="f2d">Fisik → Digital</div>
+      </div>
+      <div class="field-label" style="margin-top:0;">Jumlah (Rp)</div>
+      <input type="number" inputmode="numeric" class="amount-input" id="convertAmountInput" placeholder="0" min="0">
+      <div class="field-label">Catatan (opsional)</div>
+      <input type="text" class="text-input" id="convertNoteInput" placeholder="Catatan (opsional)">
+      <div class="err-msg" id="convertErrMsg">Isi jumlah yang valid.</div>
+      <button class="save-btn" id="saveConvertBtn">Konversi</button>
+      <button class="save-btn secondary" id="closeConvertBtn" style="margin-top:10px;">Batal</button>
     </div>
   </div>
 
@@ -864,7 +1026,11 @@ const ICONS = {
   darurat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V6z"/><path d="M12 8v5M12 16.2v0"/></svg>',
   keinginan: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5s-7.5-4.6-9.7-9C.8 8 2 4.5 5.4 3.7 8 3 10.5 4.3 12 6.5 13.5 4.3 16 3 18.6 3.7 22 4.5 23.2 8 21.7 11.5c-2.2 4.4-9.7 9-9.7 9z"/></svg>',
   lainnya: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12h6M12 9v6"/></svg>',
-  custom: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12.5V19a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/><path d="M16 3l5 5-9.5 9.5-5 1 1-5z"/></svg>'
+  custom: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12.5V19a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/><path d="M16 3l5 5-9.5 9.5-5 1 1-5z"/></svg>',
+  eventSingle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>',
+  eventRepeat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>',
+  convert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h12l-3.5-3.5"/><path d="M17 17H5l3.5 3.5"/></svg>',
+  wallet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2.5"/><path d="M16 13h.01"/><path d="M2 10h20"/></svg>'
 };
 const CHART_COLORS = ['#4fba8f','#e0a458','#8b93a3','#d97a86','#7fa8d9','#c9a8e0','#e0c458','#7fbfd9'];
 const STORAGE_KEY = 'catatan_kas_fin_data';
@@ -896,6 +1062,12 @@ let calendarEvents = [];
 let calYear, calMonthIdx;
 let calSelectedDate = null;
 let selRecDays = new Set();
+let currentView = 'keuangan';
+let todos = [];
+let selEventColor = '';
+let selRecColor = '';
+let convertDirection = 'd2f';
+const EVENT_COLORS = ['#4fba8f','#e0a458','#d97a86','#7fa8d9','#c9a8e0','#e0c458','#7fbfd9','#8b93a3'];
 let currentTab = 'ringkasan';
 let selType = 'in';
 let selMethodIn = null;
@@ -965,11 +1137,13 @@ function loadData(){
       if(parsed.categories && parsed.categories.length) categories = parsed.categories;
       saveDataList = parsed.saveDataList || [];
       calendarEvents = parsed.calendarEvents || [];
+      todos = parsed.todos || [];
     }
   }catch(e){
     transactions = [];
     saveDataList = [];
     calendarEvents = [];
+    todos = [];
   }
 
   // migrasi: kalau ada transaksi lama tanpa saveId, atau belum ada save data sama sekali
@@ -995,7 +1169,7 @@ function loadData(){
 
 function saveData(){
   try{
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({transactions, categories, saveDataList, calendarEvents}));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({transactions, categories, saveDataList, calendarEvents, todos}));
   }catch(e){
     showToast('Gagal menyimpan data di browser ini');
   }
@@ -1046,8 +1220,9 @@ async function pullFromDrive(silent){
   if(Array.isArray(parsed.categories) && parsed.categories.length) categories = parsed.categories;
   if(Array.isArray(parsed.saveDataList) && parsed.saveDataList.length) saveDataList = parsed.saveDataList;
   if(Array.isArray(parsed.calendarEvents)) calendarEvents = parsed.calendarEvents;
+  if(Array.isArray(parsed.todos)) todos = parsed.todos;
   if(!saveDataList.find(s=>s.id===currentSaveId)) currentSaveId = saveDataList[0].id;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({transactions, categories, saveDataList, calendarEvents}));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({transactions, categories, saveDataList, calendarEvents, todos}));
   renderAll();
   if(!silent) showToast('Data terbaru dari Drive dimuat');
 }
@@ -1059,7 +1234,7 @@ async function pushToDrive(){
     const res = await fetch(url, {
       method: 'POST',
       headers: {'Content-Type': 'text/plain'},
-      body: JSON.stringify({transactions, categories, saveDataList, calendarEvents})
+      body: JSON.stringify({transactions, categories, saveDataList, calendarEvents, todos})
     });
     if(!res.ok) throw new Error('Gagal menyimpan ke Drive');
     driveConnected = true;
@@ -1109,6 +1284,11 @@ function txForSave(saveId){
 function computeBalances(saveId){
   let digital = 0, fisik = 0;
   txForSave(saveId).forEach(t=>{
+    if(t.type === 'convert'){
+      if(t.fromMethod === 'digital') digital -= t.amount; else fisik -= t.amount;
+      if(t.toMethod === 'digital') digital += t.amount; else fisik += t.amount;
+      return;
+    }
     const sign = t.type === 'in' ? 1 : -1;
     if(t.method === 'digital') digital += sign * t.amount;
     else fisik += sign * t.amount;
@@ -1272,16 +1452,27 @@ function renderRiwayat(){
     byDate[date].forEach(t=>{
       const item = document.createElement('div');
       item.className = 'hist-item';
-      const iconKey = t.type === 'in' ? t.method : t.category;
-      const title = t.type === 'in' ? ('Input ' + (t.method === 'digital' ? 'Digital' : 'Fisik')) : catLabel(t.category);
-      const sub = t.note ? t.note : (t.type === 'out' ? (t.method === 'digital' ? 'Dibayar digital' : 'Dibayar tunai') : 'Dana masuk');
+      let iconKey, title, sub, iconClass, amtHtml;
+      if(t.type === 'convert'){
+        iconKey = 'convert';
+        title = 'Konversi ' + (t.fromMethod==='digital' ? 'Digital' : 'Fisik') + ' → ' + (t.toMethod==='digital' ? 'Digital' : 'Fisik');
+        sub = t.note ? t.note : 'Pemindahan saldo';
+        iconClass = 'convert';
+        amtHtml = `<div class="hist-amt" style="color:var(--text-muted);">⇄ ${fmtRp(t.amount)}</div>`;
+      } else {
+        iconKey = t.type === 'in' ? t.method : t.category;
+        title = t.type === 'in' ? ('Input ' + (t.method === 'digital' ? 'Digital' : 'Fisik')) : catLabel(t.category);
+        sub = t.note ? t.note : (t.type === 'out' ? (t.method === 'digital' ? 'Dibayar digital' : 'Dibayar tunai') : 'Dana masuk');
+        iconClass = t.method;
+        amtHtml = `<div class="hist-amt ${t.type}">${t.type==='in'?'+':'-'} ${fmtRp(t.amount)}</div>`;
+      }
       item.innerHTML = `
-        <div class="hist-icon ${t.method}">${catIcon(iconKey)}</div>
+        <div class="hist-icon ${iconClass}">${catIcon(iconKey)}</div>
         <div class="hist-mid">
           <div class="hist-title">${title}</div>
           <div class="hist-sub">${sub}</div>
         </div>
-        <div class="hist-amt ${t.type}">${t.type==='in'?'+':'-'} ${fmtRp(t.amount)}</div>
+        ${amtHtml}
         <div class="hist-del" data-id="${t.id}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></div>
       `;
       group.appendChild(item);
@@ -1307,6 +1498,7 @@ function renderAll(){
   renderRiwayat();
   renderCalendar();
   renderEventList();
+  renderTodos();
 }
 
 // ===== Save data navigation & management =====
@@ -1361,7 +1553,6 @@ document.querySelectorAll('.tab').forEach(tab=>{
     currentTab = tab.getAttribute('data-tab');
     document.getElementById('panelRingkasan').classList.toggle('active', currentTab==='ringkasan');
     document.getElementById('panelRiwayat').classList.toggle('active', currentTab==='riwayat');
-    document.getElementById('panelKalender').classList.toggle('active', currentTab==='kalender');
   });
 });
 
@@ -1443,7 +1634,11 @@ function openModal(){
   clearErr();
   document.getElementById('overlay').classList.add('open');
 }
-document.getElementById('fabAdd').addEventListener('click', openModal);
+document.getElementById('fabAdd').addEventListener('click', ()=>{
+  if(currentView === 'kalender') openEventModal();
+  else if(currentView === 'todo') document.getElementById('todoInput').focus();
+  else openModal();
+});
 document.getElementById('overlay').addEventListener('click', (e)=>{ if(e.target.id === 'overlay') document.getElementById('overlay').classList.remove('open'); });
 
 document.querySelectorAll('.seg-btn').forEach(btn=>{
@@ -1712,7 +1907,11 @@ function renderCalendar(){
   const daysInPrevMonth = new Date(calYear, calMonthIdx, 0).getDate();
   const todayStr = todayDateStr();
 
-  const eventDates = new Set(calendarEvents.map(ev=>ev.date));
+  const eventsByDate = {};
+  calendarEvents.forEach(ev=>{
+    if(!eventsByDate[ev.date]) eventsByDate[ev.date] = [];
+    eventsByDate[ev.date].push(ev);
+  });
 
   const totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
   for(let i=0; i<totalCells; i++){
@@ -1738,7 +1937,11 @@ function renderCalendar(){
     cell.className = 'cal-day' + (otherMonth ? ' other-month' : '');
     if(cellDate === todayStr) cell.classList.add('today');
     if(cellDate === calSelectedDate) cell.classList.add('selected');
-    cell.innerHTML = '<span>' + dayNum + '</span>' + (eventDates.has(cellDate) ? '<span class="dot"></span>' : '');
+    const dayEvents = (eventsByDate[cellDate] || []).slice(0, 3);
+    const dotsHtml = dayEvents.length
+      ? '<div class="cal-dots">' + dayEvents.map(ev=>`<span class="dot${ev.batchId ? ' dot-batch' : ''}" style="background:${ev.color || EVENT_COLORS[0]}"></span>`).join('') + '</div>'
+      : '';
+    cell.innerHTML = '<span>' + dayNum + '</span>' + dotsHtml;
     cell.addEventListener('click', ()=>{
       calSelectedDate = (calSelectedDate === cellDate) ? null : cellDate;
       renderCalendar();
@@ -1784,15 +1987,18 @@ function renderEventList(){
     const d = new Date(ev.date + 'T00:00:00');
     const timeText = ev.startTime ? (ev.startTime + (ev.endTime ? ' - ' + ev.endTime : '')) : '';
     const batchLink = ev.batchId ? `<div class="event-batch-link" data-batch="${ev.batchId}">Hapus semua kejadian jadwal ini</div>` : '';
+    const color = ev.color || EVENT_COLORS[0];
+    const typeIcon = ev.batchId ? ICONS.eventRepeat : ICONS.eventSingle;
     return `
       <div class="event-item">
-        <div class="event-date-badge">
-          <div class="dd">${d.getDate()}</div>
+        <div class="event-icon" style="background:${color}26; color:${color};">${typeIcon}</div>
+        <div class="event-date-badge" style="background:${color}26;">
+          <div class="dd" style="color:${color};">${d.getDate()}</div>
           <div class="mm">${MONTH_SHORT_ID[d.getMonth()]}</div>
         </div>
         <div class="event-mid">
           <div class="event-title">${ev.title}</div>
-          ${timeText ? `<div class="event-time">${timeText}</div>` : ''}
+          ${timeText ? `<div class="event-time" style="color:${color};">${timeText}</div>` : ''}
           ${ev.note ? `<div class="event-note">${ev.note}</div>` : ''}
           ${batchLink}
         </div>
@@ -1831,6 +2037,23 @@ document.getElementById('clearDateFilter').addEventListener('click', ()=>{
 });
 
 // ---- Tambah janji tunggal ----
+function buildColorSwatchGrid(containerId, currentColor, onSelect){
+  const grid = document.getElementById(containerId);
+  grid.innerHTML = '';
+  EVENT_COLORS.forEach(c=>{
+    const sw = document.createElement('div');
+    sw.className = 'color-swatch' + (c === currentColor ? ' selected' : '');
+    sw.style.background = c;
+    sw.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>';
+    sw.addEventListener('click', ()=>{
+      grid.querySelectorAll('.color-swatch').forEach(x=>x.classList.remove('selected'));
+      sw.classList.add('selected');
+      onSelect(c);
+    });
+    grid.appendChild(sw);
+  });
+}
+
 function openEventModal(){
   document.getElementById('eventTitleInput').value = '';
   document.getElementById('eventDateInput').value = calSelectedDate || todayDateStr();
@@ -1838,6 +2061,8 @@ function openEventModal(){
   document.getElementById('eventEndInput').value = '';
   document.getElementById('eventNoteInput').value = '';
   document.getElementById('eventErrMsg').style.display = 'none';
+  selEventColor = EVENT_COLORS[0];
+  buildColorSwatchGrid('eventColorGrid', selEventColor, (c)=>{ selEventColor = c; });
   document.getElementById('eventOverlay').classList.add('open');
 }
 document.getElementById('addEventBtn').addEventListener('click', openEventModal);
@@ -1862,6 +2087,7 @@ document.getElementById('saveEventBtn').addEventListener('click', ()=>{
   calendarEvents.push({
     id: uid('ev'),
     title, date, startTime: startTime || '', endTime: endTime || '', note,
+    color: selEventColor,
     createdAt: Date.now()
   });
   saveData();
@@ -1905,6 +2131,8 @@ function openRecurringModal(){
   document.getElementById('recDateEndInput').value = '';
   document.getElementById('recNoteInput').value = '';
   document.getElementById('recErrMsg').style.display = 'none';
+  selRecColor = EVENT_COLORS[1];
+  buildColorSwatchGrid('recColorGrid', selRecColor, (c)=>{ selRecColor = c; });
   document.getElementById('recurringOverlay').classList.add('open');
 }
 document.getElementById('addRecurringBtn').addEventListener('click', openRecurringModal);
@@ -1942,6 +2170,7 @@ document.getElementById('saveRecurringBtn').addEventListener('click', ()=>{
       calendarEvents.push({
         id: uid('ev'),
         title, date: ymd(d), startTime, endTime, note,
+        color: selRecColor,
         batchId, createdAt: Date.now()
       });
       created++;
@@ -1955,6 +2184,127 @@ document.getElementById('saveRecurringBtn').addEventListener('click', ()=>{
   renderEventList();
   document.getElementById('recurringOverlay').classList.remove('open');
   showToast(created + ' jadwal berhasil dibuat');
+});
+
+// ===== Menu navigasi (Keuangan / Kalender / To Do) =====
+function switchView(view){
+  currentView = view;
+  document.getElementById('financeMainContent').style.display = (view === 'keuangan') ? '' : 'none';
+  document.getElementById('panelKalender').classList.toggle('active', view === 'kalender');
+  document.getElementById('viewTodo').classList.toggle('active', view === 'todo');
+  document.querySelectorAll('.menu-item').forEach(mi=> mi.classList.toggle('menu-active', mi.getAttribute('data-view') === view));
+  document.getElementById('viewMenuOverlay').classList.remove('open');
+}
+document.getElementById('menuIconBtn').addEventListener('click', ()=>{
+  document.getElementById('viewMenuOverlay').classList.add('open');
+});
+document.getElementById('viewMenuOverlay').addEventListener('click', (e)=>{ if(e.target.id === 'viewMenuOverlay') document.getElementById('viewMenuOverlay').classList.remove('open'); });
+document.querySelectorAll('.menu-item').forEach(mi=>{
+  mi.addEventListener('click', ()=> switchView(mi.getAttribute('data-view')));
+});
+
+// ===== To Do List =====
+function renderTodos(){
+  const listEl = document.getElementById('todoList');
+  if(todos.length === 0){
+    listEl.innerHTML = '<div class="empty-state"><div class="e-title">Belum ada tugas</div><div class="e-sub">Tambahkan tugas di kolom atas untuk memulai.</div></div>';
+    return;
+  }
+  const sorted = todos.slice().sort((a,b)=>{
+    if(a.done !== b.done) return a.done ? 1 : -1;
+    return a.createdAt - b.createdAt;
+  });
+  listEl.innerHTML = sorted.map(td=>`
+    <div class="todo-item">
+      <div class="todo-check${td.done ? ' done' : ''}" data-id="${td.id}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+      </div>
+      <div class="todo-text${td.done ? ' done' : ''}">${td.text}</div>
+      <div class="todo-del" data-id="${td.id}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></div>
+    </div>
+  `).join('');
+
+  listEl.querySelectorAll('.todo-check').forEach(chk=>{
+    chk.addEventListener('click', ()=>{
+      const td = todos.find(t=>t.id === chk.getAttribute('data-id'));
+      if(td){ td.done = !td.done; saveData(); renderTodos(); }
+    });
+  });
+  listEl.querySelectorAll('.todo-del').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      todos = todos.filter(t=>t.id !== btn.getAttribute('data-id'));
+      saveData();
+      renderTodos();
+      showToast('Tugas dihapus');
+    });
+  });
+}
+
+function addTodo(){
+  const input = document.getElementById('todoInput');
+  const text = input.value.trim();
+  if(!text) return;
+  todos.push({id: uid('td'), text, done: false, createdAt: Date.now()});
+  input.value = '';
+  saveData();
+  renderTodos();
+}
+document.getElementById('addTodoBtn').addEventListener('click', addTodo);
+document.getElementById('todoInput').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter') addTodo();
+});
+
+// ===== Konversi Saldo =====
+document.getElementById('openConvertBtn').addEventListener('click', ()=>{
+  convertDirection = 'd2f';
+  document.querySelectorAll('#convertOverlay .seg-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector('#convertOverlay .seg-btn[data-dir="d2f"]').classList.add('active');
+  document.getElementById('convertAmountInput').value = '';
+  document.getElementById('convertNoteInput').value = '';
+  document.getElementById('convertErrMsg').style.display = 'none';
+  document.getElementById('convertOverlay').classList.add('open');
+});
+document.getElementById('closeConvertBtn').addEventListener('click', ()=>{
+  document.getElementById('convertOverlay').classList.remove('open');
+});
+document.getElementById('convertOverlay').addEventListener('click', (e)=>{ if(e.target.id === 'convertOverlay') document.getElementById('convertOverlay').classList.remove('open'); });
+document.querySelectorAll('#convertOverlay .seg-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#convertOverlay .seg-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    convertDirection = btn.getAttribute('data-dir');
+  });
+});
+document.getElementById('saveConvertBtn').addEventListener('click', ()=>{
+  const amount = parseFloat(document.getElementById('convertAmountInput').value);
+  const note = document.getElementById('convertNoteInput').value.trim();
+  const errEl = document.getElementById('convertErrMsg');
+  if(!amount || amount <= 0){
+    errEl.textContent = 'Isi jumlah yang valid terlebih dahulu.';
+    errEl.style.display = 'block';
+    return;
+  }
+  const fromMethod = convertDirection === 'd2f' ? 'digital' : 'fisik';
+  const toMethod = convertDirection === 'd2f' ? 'fisik' : 'digital';
+  const bal = computeBalances(currentSaveId);
+  const availableBal = fromMethod === 'digital' ? bal.digital : bal.fisik;
+  if(amount > availableBal){
+    const ok = confirm('Saldo ' + (fromMethod==='digital'?'digital':'fisik') + ' tidak mencukupi (tersisa ' + fmtRp(availableBal) + '). Tetap lanjutkan?');
+    if(!ok) return;
+  }
+  transactions.push({
+    id: uid('tx'),
+    saveId: currentSaveId,
+    type: 'convert',
+    fromMethod, toMethod,
+    amount, note,
+    date: todayDateStr(),
+    createdAt: Date.now()
+  });
+  saveData();
+  renderAll();
+  document.getElementById('convertOverlay').classList.remove('open');
+  showToast('Saldo berhasil dikonversi');
 });
 
 iconSlotFill();
